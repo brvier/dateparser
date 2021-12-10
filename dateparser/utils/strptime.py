@@ -34,9 +34,12 @@ def patch_strptime():
         _strptime_spec.loader.exec_module(_calendar)
         sys.modules["calendar_patched"] = _calendar
     else:
-        _strptime = imp.load_module("strptime_patched", *imp.find_module("_strptime"))
-        _calendar = imp.load_module("calendar_patched", *imp.find_module("_strptime"))
-
+        _strptime = _strptime_spec.loader.load_module()
+        sys.modules["strptime_patched"] = _strptime
+        _calendar = _strptime_spec.loader.load_module()
+        sys.modules["calendar_patched"] = _calendar
+        # _strptime = imp.load_module("strptime_patched", *imp.find_module("_strptime"))
+        # _calendar = imp.load_module("calendar_patched", *imp.find_module("_strptime"))
     _strptime._getlang = lambda: ("en_US", "UTF-8")
     _strptime.calendar = _calendar
     _strptime.calendar.day_abbr = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
